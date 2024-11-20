@@ -1,7 +1,6 @@
 'use client'
 
 import * as Avatar from '@radix-ui/react-avatar'
-import { useMessagesContext } from '../contexts/MessagesContext'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -12,9 +11,8 @@ interface MessageProps {
   isOwn: boolean
 }
 
-const EMOJI_LIST = ['👍', '❤️', '😂', '😮', '😢', '😡']
 
-export function Message({ id, content, sender, isOwn }: MessageProps) {
+export function Message({ content, sender, isOwn }: MessageProps) {
   const [showReactions, setShowReactions] = useState(false)
 
   return (
