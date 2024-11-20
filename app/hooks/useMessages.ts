@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useCallback, useMemo, useEffect } from 'react'
-import io from 'socket.io-client'
+import { io, Socket } from 'socket.io-client'
 import { v4 as uuidv4 } from 'uuid' // Для генерации уникальных ID
 
-let socket: any;
+let socket: Socket;
 
 export interface Reaction {
   emoji: string

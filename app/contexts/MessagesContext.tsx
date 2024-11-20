@@ -1,9 +1,9 @@
 'use client'
 
 import { createContext, useContext, ReactNode, useState, useEffect, useCallback } from 'react'
-import io from 'socket.io-client'
+import { io, Socket } from 'socket.io-client'
 
-let socket: any;
+let socket: Socket;
 
 interface Message {
   id: string
