@@ -91,7 +91,7 @@ export default function Home() {
           className="p-4 bg-gray-100 dark:bg-gray-800 transition-colors duration-300"
         >
           <TypingIndicator />
-          <MessageInput username={username} roomKey={roomKey} />
+          <MessageInput/>
         </motion.div>
       </motion.main>
     </MessagesProvider>
