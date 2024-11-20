@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import io from 'socket.io-client'
+import { io, Socket } from 'socket.io-client'
 
-let socket: any;
+let socket: Socket;
 
 export function TypingIndicator() {
   const [isTyping, setIsTyping] = useState(false)
