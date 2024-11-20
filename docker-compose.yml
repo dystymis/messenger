@@ -1,9 +1,14 @@
 services:
-  web:
+  app:
     build: .
     ports:
       - "3000:3000"
     volumes:
       - .:/app
+      - sqlite-db:/app/db
     environment:
       NODE_ENV: production
+
+volumes:
+  sqlite-db:
+    driver: local
