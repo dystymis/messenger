@@ -21,7 +21,7 @@ export async function GET(request: Request) {
       content: decrypt(msg.content)
     }))
     return NextResponse.json(decryptedMessages)
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error fetching messages:', error)
     return NextResponse.json({ error: 'Failed to fetch messages', details: error.message }, { status: 500 })
   }
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
       ...newMessage,
       content: decrypt(newMessage.content)
     })
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error adding message:', error)
     return NextResponse.json({ error: 'Failed to add message', details: error.message }, { status: 500 })
   }
