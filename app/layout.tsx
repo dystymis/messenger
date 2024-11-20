@@ -12,10 +12,16 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  // Пример значений (можно заменить на динамическую логику)
+  const username = ''
+  const roomKey = ''
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <Providers>{children}</Providers>
+        <Providers username={username} roomKey={roomKey}>
+          {children}
+        </Providers>
       </body>
     </html>
   )
