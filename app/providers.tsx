@@ -4,10 +4,18 @@ import { ThemeProvider } from 'next-themes'
 import { ReactNode } from 'react'
 import { MessagesProvider } from './contexts/MessagesContext'
 
-export function Providers({ children }: { children: ReactNode }) {
+interface ProvidersProps {
+  children: ReactNode
+  username: string
+  roomKey: string
+}
+
+export function Providers({ children, username, roomKey }: ProvidersProps) {
   return (
     <ThemeProvider attribute="class">
-      <MessagesProvider>{children}</MessagesProvider>
+      <MessagesProvider username={username} roomKey={roomKey}>
+        {children}
+      </MessagesProvider>
     </ThemeProvider>
   )
 }
