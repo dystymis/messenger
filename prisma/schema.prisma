@@ -1,0 +1,25 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // будет использовать строку подключения из .env файла
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Room {
+  id        Int      @id @default(autoincrement())
+  name      String
+  key       String   @unique
+  createdAt DateTime @default(now())
+  messages  Message[]
+}
+
+model Message {
+  id        String   @id
+  roomId    Int
+  content   String
+  sender    String
+  timestamp DateTime @default(now())
+  room      Room     @relation(fields: [roomId], references: [id])
+}
