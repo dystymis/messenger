@@ -1,79 +1,85 @@
-import { Client } from 'pg'
+import sqlite3 from 'sqlite3'
+import { open, Database } from 'sqlite'
 import crypto from 'crypto'
+import path from 'path'
 
-// Создаём клиент PostgreSQL
-const client = new Client({
-  connectionString: process.env.DATABASE_URL, // Ваша строка подключения из .env
-  ssl: { rejectUnauthorized: false }, // Для работы с SSL (если необходимо)
-})
+let db: Database<sqlite3.Database, sqlite3.Statement> | null = null
 
-// Открываем подключение к базе данных
 async function openDb() {
-  if (!client._connected) {
+  if (!db) {
+    const dbPath = path.resolve(process.cwd(), 'messages.sqlite')
     try {
-      await client.connect()
-      console.log('Connected to PostgreSQL')
+      db = await open({
+        filename: dbPath,
+        driver: sqlite3.Database
+      })
+      await db.exec(`
+        CREATE TABLE IF NOT EXISTS rooms (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT,
+          key TEXT UNIQUE,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS messages (
+          id TEXT PRIMARY KEY,
+          room_id INTEGER,
+          content TEXT,
+          sender TEXT,
+          timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (room_id) REFERENCES rooms(id)
+        );
+      `)
     } catch (error) {
-      console.error('Error connecting to PostgreSQL:', error)
+      console.error('Error opening database:', error)
       throw error
     }
   }
-  return client
+  return db
 }
 
-// Создаём комнату
 export async function createRoom(name: string) {
+  const db = await openDb()
   const key = crypto.randomBytes(16).toString('hex')
-  await openDb()
   try {
-    const result = await client.query(
-      'INSERT INTO rooms (name, key) VALUES ($1, $2) RETURNING id, name, key',
-      [name, key]
-    )
-    return result.rows[0]
+    const result = await db.run('INSERT INTO rooms (name, key) VALUES (?, ?)', [name, key])
+    return { id: result.lastID, name, key }
   } catch (error) {
     console.error('Error creating room:', error)
     throw error
   }
 }
 
-// Получаем комнату по ключу
 export async function getRoomByKey(key: string) {
-  await openDb()
+  const db = await openDb()
   try {
-    const result = await client.query('SELECT * FROM rooms WHERE key = $1', [key])
-    return result.rows[0]
+    return await db.get('SELECT * FROM rooms WHERE key = ?', [key])
   } catch (error) {
     console.error('Error getting room by key:', error)
     throw error
   }
 }
 
-// Получаем сообщения из комнаты
 export async function getMessages(roomId: number) {
-  await openDb()
+  const db = await openDb()
   try {
-    const result = await client.query(
-      'SELECT * FROM messages WHERE room_id = $1 ORDER BY timestamp ASC',
-      [roomId]
-    )
-    return result.rows
+    return await db.all('SELECT * FROM messages WHERE room_id = ? ORDER BY timestamp ASC', [roomId])
   } catch (error) {
     console.error('Error getting messages:', error)
     throw error
   }
 }
 
-// Добавляем новое сообщение
 export async function addMessage(roomId: number, content: string, sender: string) {
+  const db = await openDb()
   const id = crypto.randomBytes(16).toString('hex')
-  await openDb()
   try {
-    const result = await client.query(
-      'INSERT INTO messages (id, room_id, content, sender) VALUES ($1, $2, $3, $4) RETURNING *',
+    await db.run(
+      'INSERT INTO messages (id, room_id, content, sender) VALUES (?, ?, ?, ?)',
       [id, roomId, content, sender]
     )
-    return result.rows[0]
+    const newMessage = await db.get('SELECT * FROM messages WHERE id = ?', [id])
+    return newMessage
   } catch (error) {
     console.error('Error adding message:', error)
     throw error
