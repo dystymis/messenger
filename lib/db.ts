@@ -3,7 +3,7 @@ import { open } from 'sqlite'
 import crypto from 'crypto'
 import path from 'path'
 
-let db: any = null;
+let db: Database<sqlite3.Database, sqlite3.Statement> | null = null;
 
 async function openDb() {
   if (!db) {

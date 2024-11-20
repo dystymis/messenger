@@ -1,32 +1,40 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import io from 'socket.io-client'
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { io, Socket } from 'socket.io-client';
 
-let socket: any;
+// Определяем тип данных, которые будут приходить через сокет
+interface TypingEvent {
+  username: string;
+  isTyping: boolean;
+}
+
+let socket: Socket | null = null;
 
 export function TypingIndicator() {
-  const [isTyping, setIsTyping] = useState(false)
-  const [typingUser, setTypingUser] = useState('')
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingUser, setTypingUser] = useState('');
 
   useEffect(() => {
-    socketInitializer()
+    socketInitializer();
 
     return () => {
-      if (socket) socket.disconnect()
-    }
-  }, [])
+      if (socket) {
+        socket.disconnect();
+      }
+    };
+  }, []);
 
   const socketInitializer = async () => {
-    await fetch('/api/socketio')
-    socket = io()
+    await fetch('/api/socketio');
+    socket = io();
 
-    socket.on('user-typing', ({ username, isTyping: typing }) => {
-      setIsTyping(typing)
-      setTypingUser(username)
-    })
-  }
+    socket.on('user-typing', ({ username, isTyping: typing }: TypingEvent) => {
+      setIsTyping(typing);
+      setTypingUser(username);
+    });
+  };
 
   return (
     <AnimatePresence>
@@ -41,5 +49,5 @@ export function TypingIndicator() {
         </motion.div>
       )}
     </AnimatePresence>
-  )
+  );
 }
