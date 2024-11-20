@@ -10,13 +10,11 @@ interface MessageProps {
   content: string
   sender: string
   isOwn: boolean
-  reactions?: { emoji: string; count: number }[]
 }
 
 const EMOJI_LIST = ['👍', '❤️', '😂', '😮', '😢', '😡']
 
-export function Message({ id, content, sender, isOwn, reactions = [] }: MessageProps) {
-  const { addReaction } = useMessagesContext()
+export function Message({ id, content, sender, isOwn }: MessageProps) {
   const [showReactions, setShowReactions] = useState(false)
 
   return (
@@ -54,28 +52,6 @@ export function Message({ id, content, sender, isOwn, reactions = [] }: MessageP
                 exit={{ opacity: 0, y: 10 }}
                 className="mt-1 flex flex-wrap gap-1"
               >
-                {reactions.map(({ emoji, count }) => (
-                  <motion.button
-                    key={emoji}
-                    whileHover={{ scale: 1.2 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => addReaction(id, emoji)}
-                    className="bg-gray-100 dark:bg-gray-800 rounded-full px-2 py-1 text-xs"
-                  >
-                    {emoji} {count}
-                  </motion.button>
-                ))}
-                {EMOJI_LIST.map(emoji => (
-                  <motion.button
-                    key={emoji}
-                    whileHover={{ scale: 1.2 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => addReaction(id, emoji)}
-                    className="bg-gray-100 dark:bg-gray-800 rounded-full px-2 py-1 text-xs hover:bg-gray-200 dark:hover:bg-gray-700"
-                  >
-                    {emoji}
-                  </motion.button>
-                ))}
               </motion.div>
             )}
           </AnimatePresence>
