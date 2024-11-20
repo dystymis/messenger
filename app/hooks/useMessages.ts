@@ -63,7 +63,12 @@ export function useMessages(currentUser: string) {
     }
 
     setMessages(prev => [...prev, newMessage]) // Локально добавляем сообщение
-    socket.emit('send-message', newMessage) // Отправляем на сервер
+    if (socket) {
+        socket.emit('send-message', newMessage) // Отправляем на сервер
+      } else {
+        console.error('Socket is not initialized')
+      }
+  
 
     // Отправляем на сервер для сохранения
     await fetch('/api/messages', {
