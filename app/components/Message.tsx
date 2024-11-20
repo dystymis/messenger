@@ -1,7 +1,6 @@
 'use client'
 
 import * as Avatar from '@radix-ui/react-avatar'
-import { useState } from 'react'
 import { motion } from 'framer-motion'
 
 interface MessageProps {
@@ -11,7 +10,7 @@ interface MessageProps {
   isOwn: boolean
 }
 
-export function Message({ id, content, sender, isOwn }: MessageProps) {
+export function Message({ content, sender, isOwn }: MessageProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
